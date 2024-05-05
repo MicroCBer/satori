@@ -57,7 +57,7 @@ export class TelegramMessageEncoder<C extends Context = Context> extends Message
             filename: (i++) + filename,
             data,
             mime,
-            type: filename.endsWith('gif') ? 'animation' : typeMap[element.type] ?? element.type,
+            type: filename.endsWith('mp4') ? 'video' : typeMap[element.type] ?? element.type,
             element
           })
         }

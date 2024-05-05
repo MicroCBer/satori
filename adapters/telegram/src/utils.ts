@@ -222,11 +222,16 @@ export async function decodeMessage(
     segments.push(h('text', { content: ' ' }))
   }
 
-  const addResource = async (type: string, data: Telegram.Animation | Telegram.Video | Telegram.Document | Telegram.Voice) => {
+  const addResource = async (type: string, data: Telegram.Animation | Telegram.Video | Telegram.Document | Telegram.Voice, ext: object = {}) => {
     const attrs: Dict<string> = await bot.$getFileFromId(data.file_id)
     if (data['file_name']) {
       attrs.filename = data['file_name']
     }
+
+    for (const [key, value] of Object.entries(ext)) {
+      attrs[key] = value
+    }
+
     segments.push(h(type, attrs))
   }
 
@@ -252,9 +257,13 @@ export async function decodeMessage(
   } else if (data.voice) {
     await addResource('audio', data.voice)
   } else if (data.animation) {
-    await addResource('img', data.animation)
+    await addResource('video', data.animation, {
+      spoiler: data.has_media_spoiler
+    })
   } else if (data.video) {
-    await addResource('video', data.video)
+    await addResource('video', data.video, {
+      spoiler: data.has_media_spoiler
+    })
   } else if (data.document) {
     await addResource('file', data.document)
   } else if (data.audio) {
